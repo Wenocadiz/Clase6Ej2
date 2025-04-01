@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Gastos Diarios</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+    }
+    .btn-custom {
+      background-color: #ff4081;
+      color: white;
+      font-size: 1.2rem;
+    }
+    .btn-custom:hover {
+      background-color: #e91e63;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="text-center mb-4">Calculadora de Gastos Diarios</h1>
+    <div class="mb-3">
+      <label for="concepto" class="form-label">Concepto</label>
+      <input type="text" id="concepto" class="form-control" placeholder="Por ejemplo: Comida, Transporte" />
+    </div>
+    <div class="mb-3">
+      <label for="monto" class="form-label">Monto ($)</label>
+      <input type="number" id="monto" class="form-control" placeholder="Ingrese el monto" />
+    </div>
+    <button class="btn btn-custom w-100 mb-4" onclick="agregarGasto()">Agregar Gasto</button>
+
+    <h2>Lista de Gastos</h2>
+    <ul id="listaGastos" class="list-group mb-4"></ul>
+
+    <h3>Total Gastado: $<span id="total">0</span></h3>
+    <h4>Resumen por Categoría:</h4>
+    <ul id="resumenCategorias" class="list-group"></ul>
+  </div>
+
+  <script>
+    const gastos = [];
+
+    function agregarGasto() {
+      const concepto = document.getElementById('concepto').value.trim();
+      const monto = parseFloat(document.getElementById('monto').value);
+
+      if (!concepto || isNaN(monto) || monto <= 0) {
+        alert('Ingrese un concepto válido y un monto positivo.');
+        return;
+      }
+
+      const gasto = { concepto, monto };
+      gastos.push(gasto);
+
+      actualizarLista();
+      actualizarResumen();
+      document.getElementById('concepto').value = '';
+      document.getElementById('monto').value = '';
+    }
+
+    function actualizarLista() {
+      const listaGastos = document.getElementById('listaGastos');
+      listaGastos.innerHTML = '';
+
+      gastos.forEach((gasto, index) => {
+        const item = document.createElement('li');
+        item.className = 'list-group-item bg-dark text-white animate__animated animate__fadeIn';
+        item.textContent = `${gasto.concepto}: $${gasto.monto.toFixed(2)}`;
+        listaGastos.appendChild(item);
+      });
+    }
+
+    function actualizarResumen() {
+      const total = gastos.reduce((acc, gasto) => acc + gasto.monto, 0);
+      document.getElementById('total').textContent = total.toFixed(2);
+
+      const resumenCategorias = document.getElementById('resumenCategorias');
+      resumenCategorias.innerHTML = '';
+
+      const categorias = gastos.reduce((acc, gasto) => {
+        acc[gasto.concepto] = (acc[gasto.concepto] || 0) + gasto.monto;
+        return acc;
+      }, {});
+
+      for (const [concepto, monto] of Object.entries(categorias)) {
+        const item = document.createElement('li');
+        item.className = 'list-group-item bg-dark text-white animate__animated animate__bounceIn';
+        item.textContent = `${concepto}: $${monto.toFixed(2)}`;
+        resumenCategorias.appendChild(item);
+      }
+    }
+  </script>
+</body>
+</html>
